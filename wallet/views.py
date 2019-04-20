@@ -1,3 +1,6 @@
 from django.shortcuts import render
 
-# Create your views here.
+def Dashboard(request):
+    myData = { 'dataTest': 'its just test'}
+    return render(request, 'wallet/dashboard.html', myData)
+
