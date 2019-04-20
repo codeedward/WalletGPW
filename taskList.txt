@@ -1,0 +1,5 @@
+- move logic responsible for reading excel into separate file
+- use logic responsible for reading excel from separate file in views.py
+- look how python keeps data on the server session and keep it there once loaded
+- create form which can be used as a filter on dashboard
+- display some properties regarding to the created form

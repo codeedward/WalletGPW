@@ -1,6 +1,7 @@
 from django.shortcuts import render
 import openpyxl
 from .models import ExcelEntryRow
+from .utils.excel_utils import FilterExcel
 
 def Dashboard(request):
     myData = { 'dataTest': 'its just test'}
@@ -25,6 +26,7 @@ def Dashboard(request):
                 #row_data.append(str(cell.value))
             excel_data.append(row_data)
 
-        return render(request, 'wallet/dashboard.html', {"excel_data":excel_data})
+        modelData = FilterExcel(excel_data, 'Normalny')
+        return render(request, 'wallet/dashboard.html', {"excel_data": modelData})
     #return render(request, 'wallet/dashboard.html', myData)
 

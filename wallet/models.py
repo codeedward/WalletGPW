@@ -2,7 +2,7 @@ from django.db import models
 
 class ExcelEntryRow():
     date = ''
-    transactionType = ''
+    transactionType = '' #{Normalny,IKE}
     name = ''
     quantity = ''
     price = ''
