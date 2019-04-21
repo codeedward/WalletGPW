@@ -1,2 +1,11 @@
+__pycache__/
 *.pyc
 *.pyo
+
+/wallet/__pycache__/models.cpython-37.pyc
+
+/wallet/__pycache__/models.cpython-37.pyc
+
+/wallet/__pycache__/views.cpython-37.pyc
+
+wallet/__pycache__/views.cpython-37.pyc
