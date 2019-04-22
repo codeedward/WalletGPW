@@ -13,8 +13,6 @@ class ExcelEntryRow():
     accountType = ''
 
     def __init__(self, row = None):
-        print("Typ tej klasy to:")
-        print(type(row))
         if type(row) is tuple:
             self.date = row[0].value
             self.transactionType = row[1].value

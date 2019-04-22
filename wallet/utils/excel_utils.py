@@ -1,5 +1,7 @@
 import openpyxl
 from ..models import ExcelEntryRow
+import json
+from django.core.serializers.json import DjangoJSONEncoder
 
 def ReadExcel(excel_file):
     # you may put validations here to check extension or file size
@@ -23,9 +25,28 @@ def ReadExcel(excel_file):
 def FilterExcel(listOfExcelRows, accountType):
     return filter(lambda x: filterExcel(x, accountType), listOfExcelRows)
 
+def GetExcelDataFromSession(request):
+    deserializedDataFromSession = []
+
+    if('excelData' in request.session):
+        excelDataFromSession = request.session['excelData']
+        for r in excelDataFromSession:
+            rowSet = json.loads(r)
+            newExcelObj = ExcelEntryRow(rowSet)
+            newDesObj = newExcelObj
+            deserializedDataFromSession.append(newDesObj)
+
+    return deserializedDataFromSession
+
+def SaveExcelDataToSession(request, excelData):
+    serializedData = [json.dumps(r.__dict__, cls=DjangoJSONEncoder) for r in excelData]
+    request.session['excelData'] = serializedData
 
 def filterExcel(excelEntryRow, accountType):
     if(excelEntryRow.accountType != accountType and accountType != ''):
         return False
-
     return True
+
+class mySerializer(json.JSONEncoder):
+    def default(self, obj):
+        return obj.__dict__
