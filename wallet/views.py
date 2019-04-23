@@ -20,16 +20,20 @@ def LoadData(request):
 def Dashboard(request):
     form = CommonFilterForm()
     modelData = []
-    form.accountType = ['ike']
+    dataFromSession = GetExcelDataFromSession(request)
+
     if request.method=='POST':
         form = CommonFilterForm(request.POST)
         if form.is_valid():
             cleanedData = form.cleaned_data
             #now in the object cd, you have the form as a dictionary.
-            accountType = cleanedData.get('accountType')
-            print(accountType)
+            accountTypes = cleanedData.get('accountType')
+            print(accountTypes)
+            modelData = FilterExcel(dataFromSession, accountTypes)
     else:
-        dataFromSession = GetExcelDataFromSession(request)
-        modelData = FilterExcel(dataFromSession, 'Normalny')
+        initialAccountTypes = ['Normalny', 'IKE']
+        form.fields['accountType'].initial = initialAccountTypes
+
+        modelData = FilterExcel(dataFromSession, initialAccountTypes)
 
     return render(request, 'wallet/dashboard.html', {"excel_data": modelData, 'form': form})
