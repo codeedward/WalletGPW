@@ -14,7 +14,7 @@ def ReadExcel(excel_file):
     for row in worksheet.iter_rows():
         row_data = ExcelEntryRow(row)
         excel_data.append(row_data)
-    return excel_data
+    return list(reversed(excel_data))
 
 def FilterExcel(listOfExcelRows, accountTypes):
     return filter(lambda x: filterExcel(x, accountTypes), listOfExcelRows)
@@ -38,7 +38,6 @@ def SaveExcelDataToSession(request, excelData):
 
 def filterExcel(excelEntryRow, accountTypes):
     if(excelEntryRow.accountType in accountTypes):
-        #if(excelEntryRow.accountType != accountType and accountType != ''):
         return True
     return False
 

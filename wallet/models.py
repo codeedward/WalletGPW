@@ -3,14 +3,14 @@ import json
 
 class ExcelEntryRow():
     date = ''
-    transactionType = '' #{Normalny,IKE}
+    transactionType = '' #{S,K}
     name = ''
     quantity = ''
     price = ''
     transactionValue = ''
     fee = ''
     balanceChange = ''
-    accountType = ''
+    accountType = '' #{Normalny,IKE}
 
     def __init__(self, row = None):
         if type(row) is tuple:
