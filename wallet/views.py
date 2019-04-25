@@ -7,7 +7,7 @@ import datetime
 
 initialAccountTypes = ['Normalny', 'IKE']
 initialStartDate = datetime.datetime.now().date().replace(month=1, day=1)
-initialEndDate = datetime.datetime.now()
+initialEndDate = datetime.datetime.now().date()
 
 def LoadData(request):
 
@@ -27,6 +27,10 @@ def Dashboard(request):
     listOfAllTransactionsForSpecificAccountType = []
     dataFromSession = GetExcelDataFromSession(request)
 
+    accountTypes = initialAccountTypes
+    startDate = initialStartDate
+    endDate = initialEndDate
+
     if request.method=='POST':
         form = CommonFilterForm(request.POST)
         if form.is_valid():
@@ -36,12 +40,18 @@ def Dashboard(request):
             endDate = cleanedData.get('endDate')
             print(f"Start date={startDate}")
             print(f"End date={endDate}")
-            listOfAllTransactionsForSpecificAccountType = FilterExcel(dataFromSession, accountTypes)
     else:
-        form.fields['accountType'].initial = initialAccountTypes
-        form.fields['startDate'].initial = initialStartDate
-        form.fields['endDate'].initial = initialEndDate
-        listOfAllTransactionsForSpecificAccountType = FilterExcel(dataFromSession, initialAccountTypes)
+        form.fields['accountType'].initial = accountTypes
+        form.fields['startDate'].initial = startDate
+        form.fields['endDate'].initial = endDate
 
+    listOfAllTransactionsForSpecificAccountType = FilterExcel(dataFromSession, accountTypes)
+    listOfAllTransactionsFiltered = FilterExcel(dataFromSession, accountTypes, startDate, endDate)
     walletShares = GetCalculatedCurrentWallet(listOfAllTransactionsForSpecificAccountType)
-    return render(request, 'wallet/dashboard.html', {"listOfAllTransactionsForSpecificAccountType": listOfAllTransactionsForSpecificAccountType, 'form': form, 'walletShares': walletShares})
+    viewModel = {
+        'form': form,
+        "listOfAllTransactionsForSpecificAccountType": listOfAllTransactionsForSpecificAccountType,
+        'walletShares': walletShares,
+        'listOfAllTransactionsFiltered': listOfAllTransactionsFiltered
+        }
+    return render(request, 'wallet/dashboard.html', viewModel)

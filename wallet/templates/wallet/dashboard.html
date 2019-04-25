@@ -23,7 +23,15 @@
           <br>
         {% endfor %}
         <hr>
-        <h2>List of transactions</h2>
+        <h2>Filtered transactions</h2>
+        {% for row in listOfAllTransactionsFiltered %}
+          {{ row.date }}&nbsp;&nbsp;
+          {{ row.name }}&nbsp;&nbsp;
+          {{ row.accountType }}&nbsp;&nbsp;
+          <br>
+        {% endfor %}
+        <hr>
+        <h2>History of all transactions</h2>
         {% for row in listOfAllTransactionsForSpecificAccountType %}
           {{ row.date }}&nbsp;&nbsp;
           {{ row.name }}&nbsp;&nbsp;

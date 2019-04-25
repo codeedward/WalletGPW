@@ -2,6 +2,7 @@ import openpyxl
 from ..models import ExcelEntryRow
 import json
 from django.core.serializers.json import DjangoJSONEncoder
+from dateutil import parser
 
 def ReadExcel(excel_file):
     # you may put validations here to check extension or file size
@@ -13,11 +14,12 @@ def ReadExcel(excel_file):
     excel_data = list()
     for row in worksheet.iter_rows():
         row_data = ExcelEntryRow(row)
+        #if(is_date(row_data.date)):
         excel_data.append(row_data)
     return list(reversed(excel_data))
 
-def FilterExcel(listOfExcelRows, accountTypes):
-    return list(filter(lambda x: filterExcel(x, accountTypes), listOfExcelRows))
+def FilterExcel(listOfExcelRows, accountTypes, startDate = None, endDate = None):
+    return list(filter(lambda x: filterExcel(x, accountTypes, startDate, endDate), listOfExcelRows))
 
 def GetExcelDataFromSession(request):
     deserializedDataFromSession = []
@@ -36,11 +38,28 @@ def SaveExcelDataToSession(request, excelData):
     serializedData = [json.dumps(r.__dict__, cls=DjangoJSONEncoder) for r in excelData]
     request.session['excelData'] = serializedData
 
-def filterExcel(excelEntryRow, accountTypes):
-    if(excelEntryRow.accountType in accountTypes):
+def filterExcel(excelEntryRow, accountTypes, startDate, endDate):
+    if(excelEntryRow.accountType in accountTypes and
+        ((startDate is None and endDate is None) or
+            (startDate is not None and endDate is not None and startDate <= parser.parse(excelEntryRow.date).date() <= endDate))
+        ):
         return True
     return False
 
 class mySerializer(json.JSONEncoder):
     def default(self, obj):
         return obj.__dict__
+
+def is_date(string, fuzzy=False):
+    """
+    Return whether the string can be interpreted as a date.
+
+    :param string: str, string to check for date
+    :param fuzzy: bool, ignore unknown tokens in string if True
+    """
+    try:
+        parser.parse(string, fuzzy=fuzzy)
+        return True
+
+    except ValueError:
+        return False
