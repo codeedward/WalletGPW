@@ -4,18 +4,18 @@ from .forms import CommonFilterForm
 from .utils.excel_utils import FilterExcel, ReadExcel, GetExcelDataFromSession, SaveExcelDataToSession
 from .services.calculateService import GetCalculatedCurrentWallet
 
+initialAccountTypes = ['Normalny', 'IKE']
+
 def LoadData(request):
 
     if "GET" == request.method:
-        print("HERE is GET")
         dataFromSession = GetExcelDataFromSession(request)
-        modelData = FilterExcel(dataFromSession, ['Normalny', 'IKE'])
+        modelData = FilterExcel(dataFromSession, initialAccountTypes)
         return render(request, 'wallet/loadData.html', {"excel_data": modelData})
     else:
-        print("HERE is POST")
         excelData = ReadExcel(request.FILES["excel_file"])
         SaveExcelDataToSession(request, excelData)
-        modelData = FilterExcel(excelData, ['Normalny', 'IKE'])
+        modelData = FilterExcel(excelData, initialAccountTypes)
         return render(request, 'wallet/loadData.html', {"excel_data": modelData})
 
 
@@ -32,7 +32,6 @@ def Dashboard(request):
             print(accountTypes)
             modelData = FilterExcel(dataFromSession, accountTypes)
     else:
-        initialAccountTypes = ['Normalny', 'IKE']
         form.fields['accountType'].initial = initialAccountTypes
         modelData = FilterExcel(dataFromSession, initialAccountTypes)
 

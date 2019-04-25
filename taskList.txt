@@ -3,7 +3,7 @@
 + look how python keeps data on the server session and keep it there once loaded
 + make checkboxes on the form selected by default and push the result into filter method
 + create form which can be used as a filter on dashboard
-- move logic responsible for calculating wallet to different place
++ move logic responsible for calculating wallet to different place
 - add date range to the form and use it in future calculations
 - display some properties on the dashboard:
     - how much put
