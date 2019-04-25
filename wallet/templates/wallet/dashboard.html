@@ -23,7 +23,8 @@
           <br>
         {% endfor %}
         <hr>
-        {% for row in excel_data %}
+        <h2>List of transactions</h2>
+        {% for row in listOfAllTransactionsForSpecificAccountType %}
           {{ row.date }}&nbsp;&nbsp;
           {{ row.name }}&nbsp;&nbsp;
           {{ row.accountType }}&nbsp;&nbsp;

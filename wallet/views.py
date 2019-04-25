@@ -3,8 +3,11 @@ from .models import ExcelEntryRow
 from .forms import CommonFilterForm
 from .utils.excel_utils import FilterExcel, ReadExcel, GetExcelDataFromSession, SaveExcelDataToSession
 from .services.calculateService import GetCalculatedCurrentWallet
+import datetime
 
 initialAccountTypes = ['Normalny', 'IKE']
+initialStartDate = datetime.datetime.now().date().replace(month=1, day=1)
+initialEndDate = datetime.datetime.now()
 
 def LoadData(request):
 
@@ -21,7 +24,7 @@ def LoadData(request):
 
 def Dashboard(request):
     form = CommonFilterForm()
-    modelData = []
+    listOfAllTransactionsForSpecificAccountType = []
     dataFromSession = GetExcelDataFromSession(request)
 
     if request.method=='POST':
@@ -29,12 +32,16 @@ def Dashboard(request):
         if form.is_valid():
             cleanedData = form.cleaned_data
             accountTypes = cleanedData.get('accountType')
-            print(accountTypes)
-            modelData = FilterExcel(dataFromSession, accountTypes)
+            startDate = cleanedData.get('startDate')
+            endDate = cleanedData.get('endDate')
+            print(f"Start date={startDate}")
+            print(f"End date={endDate}")
+            listOfAllTransactionsForSpecificAccountType = FilterExcel(dataFromSession, accountTypes)
     else:
         form.fields['accountType'].initial = initialAccountTypes
-        modelData = FilterExcel(dataFromSession, initialAccountTypes)
+        form.fields['startDate'].initial = initialStartDate
+        form.fields['endDate'].initial = initialEndDate
+        listOfAllTransactionsForSpecificAccountType = FilterExcel(dataFromSession, initialAccountTypes)
 
-    walletShares = GetCalculatedCurrentWallet(modelData)
-
-    return render(request, 'wallet/dashboard.html', {"excel_data": modelData, 'form': form, 'walletShares': walletShares})
+    walletShares = GetCalculatedCurrentWallet(listOfAllTransactionsForSpecificAccountType)
+    return render(request, 'wallet/dashboard.html', {"listOfAllTransactionsForSpecificAccountType": listOfAllTransactionsForSpecificAccountType, 'form': form, 'walletShares': walletShares})

@@ -17,7 +17,7 @@ def ReadExcel(excel_file):
     return list(reversed(excel_data))
 
 def FilterExcel(listOfExcelRows, accountTypes):
-    return filter(lambda x: filterExcel(x, accountTypes), listOfExcelRows)
+    return list(filter(lambda x: filterExcel(x, accountTypes), listOfExcelRows))
 
 def GetExcelDataFromSession(request):
     deserializedDataFromSession = []
