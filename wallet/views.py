@@ -2,7 +2,7 @@ from django.shortcuts import render
 from .models import ExcelEntryRow
 from .forms import CommonFilterForm
 from .utils.excel_utils import FilterExcel, ReadExcel, GetExcelDataFromSession, SaveExcelDataToSession
-
+from .services.calculateService import GetCalculatedCurrentWallet
 
 def LoadData(request):
 
@@ -36,21 +36,6 @@ def Dashboard(request):
         form.fields['accountType'].initial = initialAccountTypes
         modelData = FilterExcel(dataFromSession, initialAccountTypes)
 
-    walletShares = {}
-    for transaction in modelData:
-        #print(f"Processing {transaction.name} with value {transaction.quantity}")
-        if(transaction.name not in walletShares):
-            if(transaction.transactionType == 'K'):
-                walletShares[transaction.name] = transaction.quantity
-                #print(f"Created {transaction.name} with value {transaction.quantity}")
-        else:
-            if(transaction.transactionType == 'K'):
-                #print(f"Trying to add {transaction.name} with value {transaction.quantity}")
-                walletShares[transaction.name] += float(transaction.quantity);
-            elif(transaction.transactionType == 'S'):
-                #print(f"Trying to substract {transaction.name} with value {transaction.quantity}")
-                walletShares[transaction.name] -= float(transaction.quantity);
-                if(walletShares[transaction.name] == 0):
-                    del walletShares[transaction.name]
+    walletShares = GetCalculatedCurrentWallet(modelData)
 
     return render(request, 'wallet/dashboard.html', {"excel_data": modelData, 'form': form, 'walletShares': walletShares})
