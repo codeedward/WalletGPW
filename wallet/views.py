@@ -2,7 +2,7 @@ from django.shortcuts import render
 from .models import ExcelEntryRow
 from .forms import CommonFilterForm
 from .utils.excel_utils import FilterExcel, ReadExcel, GetExcelDataFromSession, SaveExcelDataToSession
-from .services.calculateService import GetCalculatedCurrentWallet
+from .services.calculateService import GetCalculatedCurrentWallet, GetAmountPutInSoFar
 import datetime
 
 initialAccountTypes = ['Normalny', 'IKE']
@@ -38,8 +38,6 @@ def Dashboard(request):
             accountTypes = cleanedData.get('accountType')
             startDate = cleanedData.get('startDate')
             endDate = cleanedData.get('endDate')
-            print(f"Start date={startDate}")
-            print(f"End date={endDate}")
     else:
         form.fields['accountType'].initial = accountTypes
         form.fields['startDate'].initial = startDate
@@ -48,10 +46,14 @@ def Dashboard(request):
     listOfAllTransactionsForSpecificAccountType = FilterExcel(dataFromSession, accountTypes)
     listOfAllTransactionsFiltered = FilterExcel(dataFromSession, accountTypes, startDate, endDate)
     walletShares = GetCalculatedCurrentWallet(listOfAllTransactionsForSpecificAccountType)
+    stats = {
+        'putInSoFar' : "{0:.0f}".format(GetAmountPutInSoFar(listOfAllTransactionsForSpecificAccountType))
+    }
     viewModel = {
         'form': form,
-        "listOfAllTransactionsForSpecificAccountType": listOfAllTransactionsForSpecificAccountType,
+        'listOfAllTransactionsForSpecificAccountType': listOfAllTransactionsForSpecificAccountType,
         'walletShares': walletShares,
-        'listOfAllTransactionsFiltered': listOfAllTransactionsFiltered
+        'listOfAllTransactionsFiltered': listOfAllTransactionsFiltered,
+        'stats': stats
         }
     return render(request, 'wallet/dashboard.html', viewModel)

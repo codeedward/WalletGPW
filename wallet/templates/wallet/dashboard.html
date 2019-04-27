@@ -16,27 +16,53 @@
 
         <p></p>
         <hr>
-        <h2>Wallet</h2>
-        {% for rowName, quantity in walletShares.items %}
-          {{ rowName }}&nbsp;&nbsp;
-          {{ quantity }}&nbsp;&nbsp;
-          <br>
-        {% endfor %}
+        <div>
+          <h2>Statistics</h2>
+          <div><b>Global</b></div>
+          <div>Put in so far: {{stats.putInSoFar}}</div>
+          <div><b>For selected term:</b></div>
+          <div>Gain realized: 0</div>
+          <div>Fee from realized gain: 0</div>
+        </div>
+
         <hr>
-        <h2>Filtered transactions</h2>
-        {% for row in listOfAllTransactionsFiltered %}
-          {{ row.date }}&nbsp;&nbsp;
-          {{ row.name }}&nbsp;&nbsp;
-          {{ row.accountType }}&nbsp;&nbsp;
-          <br>
-        {% endfor %}
+        <div>
+          <h2>Wallet</h2>
+          {% for rowName, quantity in walletShares.items %}
+            {{ rowName }}&nbsp;&nbsp;
+            {{ quantity }}&nbsp;&nbsp;
+            <br>
+          {% endfor %}
+        </div>
+
         <hr>
-        <h2>History of all transactions</h2>
-        {% for row in listOfAllTransactionsForSpecificAccountType %}
-          {{ row.date }}&nbsp;&nbsp;
-          {{ row.name }}&nbsp;&nbsp;
-          {{ row.accountType }}&nbsp;&nbsp;
-          <br>
-        {% endfor %}
+        <div>
+          <h2>Filtered transactions</h2>
+          {% for row in listOfAllTransactionsFiltered %}
+            {{ row.date }}&nbsp;&nbsp;
+            {{ row.transactionType }}&nbsp;&nbsp;
+            {{ row.name }}&nbsp;&nbsp;
+            {{ row.quantity }}&nbsp;&nbsp;
+            {{ row.accountType }}&nbsp;&nbsp;
+            <br>
+          {% endfor %}
+        </div>
+
+        <hr>
+        <div>
+          <h2>History of all transactions</h2>
+          {% for row in listOfAllTransactionsForSpecificAccountType %}
+            {{ row.date }}&nbsp;&nbsp;
+            {{ row.transactionType }}&nbsp;&nbsp;
+            {{ row.name }}&nbsp;&nbsp;
+            {{ row.quantity }}&nbsp;&nbsp;
+            {{ row.price }}&nbsp;&nbsp;
+            {{ row.transactionValue }}&nbsp;&nbsp;
+            {{ row.fee }}&nbsp;&nbsp;
+            {{ row.balanceChange }}&nbsp;&nbsp;
+            {{ row.accountType }}&nbsp;&nbsp;
+            <br>
+          {% endfor %}
+        </div>
     </body>
 </html>

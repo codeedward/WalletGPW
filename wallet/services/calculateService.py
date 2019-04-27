@@ -1,3 +1,5 @@
+
+
 def GetCalculatedCurrentWallet(listOfTransactions):
     walletShares = {}
     for transaction in listOfTransactions:
@@ -16,3 +18,12 @@ def GetCalculatedCurrentWallet(listOfTransactions):
                 if(walletShares[transaction.name] == 0):
                     del walletShares[transaction.name]
     return walletShares
+
+
+def GetAmountPutInSoFar(listOfTransactions):
+    sum = 0
+    for transaction in listOfTransactions:
+     if(transaction.transactionType == 'Wplata'):
+        print(f"Trying to add {transaction.transactionType} {transaction.date} with value {transaction.balanceChange}")
+        sum += float(transaction.balanceChange.replace(",", "."));
+    return sum

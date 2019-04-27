@@ -22,7 +22,7 @@ class ExcelEntryRow():
             self.price = row[4].value
             self.transactionValue = row[5].value
             self.fee = row[6].value
-            self.balanceChange = row[9].value
+            self.balanceChange = row[7].value
             self.accountType = row[10].value
 
         elif type(row) is dict:

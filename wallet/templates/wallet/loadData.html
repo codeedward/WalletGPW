@@ -27,9 +27,15 @@
 
         {% for row in excel_data %}
 
-                {{ row.date }}&nbsp;&nbsp;
-                {{ row.name }}&nbsp;&nbsp;
-                {{ row.accountType }}&nbsp;&nbsp;
+            {{ row.date }}&nbsp;&nbsp;
+            {{ row.transactionType }}&nbsp;&nbsp;
+            {{ row.name }}&nbsp;&nbsp;
+            {{ row.quantity }}&nbsp;&nbsp;
+            {{ row.price }}&nbsp;&nbsp;
+            {{ row.transactionValue }}&nbsp;&nbsp;
+            {{ row.fee }}&nbsp;&nbsp;
+            {{ row.balanceChange }}&nbsp;&nbsp;
+            {{ row.accountType }}&nbsp;&nbsp;
 
             <br>
         {% endfor %}
