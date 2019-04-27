@@ -1,8 +1,9 @@
 from django.shortcuts import render
 from .models import ExcelEntryRow
 from .forms import CommonFilterForm
-from .utils.excel_utils import FilterExcel, ReadExcel, GetExcelDataFromSession, SaveExcelDataToSession
-from .services.calculateService import GetCalculatedCurrentWallet, GetAmountPutInSoFar
+from .utils.excel_utils import ReadExcel, GetExcelDataFromSession, SaveExcelDataToSession
+from .services.transactionFilterService import FilterTransactions
+from .services.calculateService import GetCalculatedCurrentWallet, GetAmountPutInSoFar, GetRealizedGain
 import datetime
 
 initialAccountTypes = ['Normalny', 'IKE']
@@ -13,12 +14,12 @@ def LoadData(request):
 
     if "GET" == request.method:
         dataFromSession = GetExcelDataFromSession(request)
-        modelData = FilterExcel(dataFromSession, initialAccountTypes)
+        modelData = FilterTransactions(dataFromSession, initialAccountTypes)
         return render(request, 'wallet/loadData.html', {"excel_data": modelData})
     else:
         excelData = ReadExcel(request.FILES["excel_file"])
         SaveExcelDataToSession(request, excelData)
-        modelData = FilterExcel(excelData, initialAccountTypes)
+        modelData = FilterTransactions(excelData, initialAccountTypes)
         return render(request, 'wallet/loadData.html', {"excel_data": modelData})
 
 
@@ -43,11 +44,15 @@ def Dashboard(request):
         form.fields['startDate'].initial = startDate
         form.fields['endDate'].initial = endDate
 
-    listOfAllTransactionsForSpecificAccountType = FilterExcel(dataFromSession, accountTypes)
-    listOfAllTransactionsFiltered = FilterExcel(dataFromSession, accountTypes, startDate, endDate)
+    listOfAllTransactionsForSpecificAccountType = FilterTransactions(dataFromSession, accountTypes)
+    listOfAllTransactionsFiltered = FilterTransactions(dataFromSession, accountTypes, startDate, endDate)
     walletShares = GetCalculatedCurrentWallet(listOfAllTransactionsForSpecificAccountType)
+    amountPutInSoFar = GetAmountPutInSoFar(listOfAllTransactionsForSpecificAccountType)
+    realizedGain = GetRealizedGain(listOfAllTransactionsForSpecificAccountType, startDate, endDate)
     stats = {
-        'putInSoFar' : "{0:.0f}".format(GetAmountPutInSoFar(listOfAllTransactionsForSpecificAccountType))
+        'putInSoFar' : "{0:.0f}".format(amountPutInSoFar),
+        'realizedGain': "{0:.0f}".format(realizedGain),
+        'feeFromRealizedGain': "{0:.0f}".format(realizedGain * 0.19)
     }
     viewModel = {
         'form': form,

@@ -4,10 +4,10 @@
 + make checkboxes on the form selected by default and push the result into filter method
 + create form which can be used as a filter on dashboard
 + move logic responsible for calculating wallet to different place
-- add date range to the form and use it in future calculations
++ add date range to the form and use it in future calculations
 - display some properties on the dashboard:
-    - how much put
-    - general info about gain/loss
-    - percentage of gain/loss
-    - fee paid
+    + how much put (whole term)
+    + gain realized (selected term)
+    + fee from realized gain (selected term)
+    - percentage of gain/loss (whole term, consider this as require more development)
 
