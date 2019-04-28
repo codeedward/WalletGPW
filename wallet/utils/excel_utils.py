@@ -13,7 +13,6 @@ def ReadExcel(excel_file):
     excel_data = list()
     for row in worksheet.iter_rows():
         row_data = ExcelEntryRow(row)
-        #if(is_date(row_data.date)):
         excel_data.append(row_data)
     return list(reversed(excel_data))
 

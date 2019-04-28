@@ -12,6 +12,8 @@ class ExcelEntryRow():
     fee = ''
     balanceChange = ''
     accountType = '' #{Normalny,IKE}
+    realizedGain = 0
+    listOfBuyTransactions = []
 
     def __init__(self, row = None):
         if type(row) is tuple:
@@ -35,3 +37,20 @@ class ExcelEntryRow():
             self.fee = row['fee']
             self.balanceChange = row['balanceChange']
             self.accountType = row['accountType']
+
+
+class TransactionBuyTakenToRealizeSell:
+    date = ''
+    transactionType = '' #{S,K}
+    name = ''
+    quantity = 0
+    quantityRealized = 0
+    price = 0
+
+    def __init__(self, transactionBuy, quantityRealized):
+        self.date = transactionBuy.date
+        self.transactionType = transactionBuy.transactionType
+        self.name = transactionBuy.name
+        self.quantity = transactionBuy.quantity
+        self.quantityRealized = quantityRealized
+        self.price = transactionBuy.price

@@ -1,6 +1,7 @@
 from .transactionFilterService import GetTransactionsSplitByShares
 import copy
 from dateutil import parser
+from ..models import TransactionBuyTakenToRealizeSell
 
 def GetCalculatedCurrentWallet(listOfTransactions):
     walletShares = {}
@@ -25,8 +26,7 @@ def GetAmountPutInSoFar(listOfTransactions):
         sum += float(transaction.balanceChange.replace(",", "."));
     return sum
 
-
-def GetRealizedGain(listOfAllTransactionsForSpecificAccountType, startDate, endDate):
+def GetGroupedTransactionsByShares(listOfAllTransactionsForSpecificAccountType, startDate, endDate):
     transactionsGoupedBySharesOriginal = GetTransactionsSplitByShares(listOfAllTransactionsForSpecificAccountType)
     transactionsGoupedByShares = copy.deepcopy(transactionsGoupedBySharesOriginal)
 
@@ -35,8 +35,8 @@ def GetRealizedGain(listOfAllTransactionsForSpecificAccountType, startDate, endD
         currentList = transactionsGoupedByShares[shareName]
         for transactionSell in currentList:
             if(transactionSell.transactionType == 'S'):
-                if(startDate <= parser.parse(transactionSell.date).date() <= endDate):
-                    print(f"-----For {shareName} - sell:{transactionSell.date} amount:{transactionSell.quantity}")
+                #if(startDate <= parser.parse(transactionSell.date).date() <= endDate):
+                    #print(f"-----For {shareName} - sell:{transactionSell.date} amount:{transactionSell.quantity}")
                 temporarySumForBatchOfBuyTransactions = 0
                 for transactionBuy in currentList:
                     if(transactionBuy.transactionType == 'K' and transactionBuy.quantity > 0):
@@ -52,15 +52,28 @@ def GetRealizedGain(listOfAllTransactionsForSpecificAccountType, startDate, endD
                             transactionSell.quantity = 0
 
                         if(startDate <= parser.parse(transactionSell.date).date() <= endDate):
-                            print(f"buy:{transactionBuy.date} amount deducted:{amountToMultiply}")
+                            #print(f"buy:{transactionBuy.date} amount deducted:{amountToMultiply}")
                             temporarySumForBatchOfBuyTransactions += amountToMultiply * (float(transactionSell.price.replace(",", ".")) - float(transactionBuy.price.replace(",", ".")))
+                            transactionBuyToRealizeGain = TransactionBuyTakenToRealizeSell(transactionBuy, amountToMultiply)
+                            transactionSell.listOfBuyTransactions.append(transactionBuyToRealizeGain)
 
                         if(transactionSell.quantity == 0 and startDate <= parser.parse(transactionSell.date).date() <= endDate):
-                            print(f"::Total result of Sell:{temporarySumForBatchOfBuyTransactions}")
-                            sum += temporarySumForBatchOfBuyTransactions;
+                            #print(f"::Total result of Sell:{temporarySumForBatchOfBuyTransactions}")
+                            #sum += temporarySumForBatchOfBuyTransactions;
+                            transactionSell.realizedGain = temporarySumForBatchOfBuyTransactions;
                         if(transactionSell.quantity == 0):
                             break
 
-    return sum
+    return transactionsGoupedByShares
 
+
+def GetRealizedGain(listOfAllTransactionsForSpecificAccountType, startDate, endDate):
+    transactionsGoupedByShares = GetGroupedTransactionsByShares(listOfAllTransactionsForSpecificAccountType, startDate, endDate)
+    sum = 0
+    for shareName, transactionList in transactionsGoupedByShares.items():
+        currentList = transactionsGoupedByShares[shareName]
+        for transactionSell in currentList:
+            if(transactionSell.transactionType == 'S'):
+                sum += transactionSell.realizedGain
+    return sum
 
