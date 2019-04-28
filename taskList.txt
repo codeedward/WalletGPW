@@ -5,9 +5,16 @@
 + create form which can be used as a filter on dashboard
 + move logic responsible for calculating wallet to different place
 + add date range to the form and use it in future calculations
-- display some properties on the dashboard:
++ display some properties on the dashboard:
     + how much put (whole term)
     + gain realized (selected term)
     + fee from realized gain (selected term)
-    - percentage of gain/loss (whole term, consider this as require more development)
-
+    + check if calculations are fine (do it manually)
+    / percentage of gain/loss (whole term, consider this as require more development)
+- details of share (when you click on it redirect you to the page with all transactions history)
+    - modify GetRealizedGain to return list of transactions with calculated Sell transactions + sublist of buy transactions related to them
+    - for each Sell type display also list of buy transactions collapsed underneath
+    - for each Sell display also gain/lose realized with this transaction
+    - overal statistic for the share gain/lose on this share already realized
+    - overal statistic for the share gain/lose on this share (require to have current rates integration)
+    - add link to this page from wallet
