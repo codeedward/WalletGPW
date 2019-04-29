@@ -9,6 +9,7 @@ from .services.calculateService import (
     GetRealizedGain,
     GetGroupedTransactionsByShares)
 import datetime
+from .services.rateService import getRate
 
 initialAccountTypes = ['Normalny', 'IKE']
 initialStartDate = datetime.datetime.now().date().replace(month=1, day=1)
@@ -79,9 +80,11 @@ def ShareDetails(request, shareName):
                 transaction.listOfBuyTransactions = list(reversed(transaction.listOfBuyTransactions))
             currentShareTransactionListOnlySell = list(filter(lambda x: x.transactionType == 'S', currentShareTransactionList))
             gainAlreadyRealized = sum(transaction.realizedGain for transaction in currentShareTransactionListOnlySell)
+            currentRate = getRate(shareName)
             return render(request, 'wallet/shareDetails.html', {
                 'shareTransactions': currentShareTransactionListOnlySell,
                 'shareName': shareName,
-                'gainAlreadyRealized': gainAlreadyRealized
+                'gainAlreadyRealized': gainAlreadyRealized,
+                'currentRate': currentRate
                 })
         return redirect('wallet-dashboard')

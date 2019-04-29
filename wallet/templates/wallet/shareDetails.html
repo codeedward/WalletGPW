@@ -1,11 +1,16 @@
 {% load humanize %}
-<h2>{{shareName}}</h2>
+<h2>{{shareName}} [{{currentRate}}]</h2>
 
 <div>
   <h2>Statistics</h2>
     <div>Gain already realized:
         <b style="color:{% if gainAlreadyRealized > 0 %} green {% else %} red {% endif %}">
             {{ gainAlreadyRealized|floatformat:0|intcomma }}
+        </b>
+    </div>
+    <div>Gain if all sold on current price:
+        <b style="color:{% if gainAlreadyRealized > 0 %} green {% else %} red {% endif %}">
+            0
         </b>
     </div>
 </div>
