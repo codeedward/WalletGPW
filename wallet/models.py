@@ -3,7 +3,7 @@ import json
 import datetime
 
 class ExcelEntryRow():
-    date = ''
+    date = datetime.datetime.now()
     transactionType = '' #{S,K}
     name = ''
     quantity = ''
@@ -12,7 +12,9 @@ class ExcelEntryRow():
     fee = ''
     balanceChange = ''
     accountType = '' #{Normalny,IKE}
+
     realizedGain = 0
+    quantityForCalculation = 0
     listOfBuyTransactions = []
 
     def __init__(self, row = None):
@@ -38,8 +40,9 @@ class ExcelEntryRow():
             self.balanceChange = row['balanceChange']
             self.accountType = row['accountType']
 
+        self.quantityForCalculation = self.quantity
 
-class TransactionBuyTakenToRealizeSell:
+class TransactionBuyTakenToRealizeSell():
     date = ''
     transactionType = '' #{S,K}
     name = ''

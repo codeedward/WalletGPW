@@ -29,7 +29,7 @@
         <div>
           <h2>Wallet</h2>
           {% for rowName, quantity in walletShares.items %}
-            {{ rowName }}&nbsp;&nbsp;
+            <a href="{% url 'wallet-shareDetails' rowName %}">{{ rowName }}</a>&nbsp;&nbsp;
             {{ quantity }}&nbsp;&nbsp;
             <br>
           {% endfor %}

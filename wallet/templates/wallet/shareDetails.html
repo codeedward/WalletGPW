@@ -1,0 +1,33 @@
+{% load humanize %}
+<h2>{{shareName}}</h2>
+
+<div>
+  <h2>Statistics</h2>
+  <div>Gain already realized: 0</div>
+</div>
+
+<hr>
+<div>
+  <h2>List of all transactions:</h2>
+  {% for transaction in shareTransactions %}
+    <div style="background-color: lightgray">
+        {{ transaction.date}}&nbsp;&nbsp;
+        {{ transaction.transactionType }}&nbsp;&nbsp;
+        {{ transaction.name }}&nbsp;&nbsp;
+        {{ transaction.quantity }} x {{ transaction.price }}&nbsp;&nbsp;
+        <b style="color:green">{{ transaction.realizedGain|floatformat:0|intcomma }}</b>&nbsp;&nbsp;
+    </div>
+    <ul>
+      {% for transactionBuy in transaction.listOfBuyTransactions %}
+        <li>
+            {{ transactionBuy.date }}&nbsp;&nbsp;
+            {{ transactionBuy.transactionType }}&nbsp;&nbsp;
+            {{ transactionBuy.name }}&nbsp;&nbsp;
+            {{ transactionBuy.quantityRealized }}&nbsp;&nbsp;
+            x{{ transactionBuy.price }}&nbsp;&nbsp;
+        </li>
+      {% endfor %}
+    </ul>
+    <br>
+  {% endfor %}
+</div>
