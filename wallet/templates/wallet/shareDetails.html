@@ -3,7 +3,11 @@
 
 <div>
   <h2>Statistics</h2>
-  <div>Gain already realized: 0</div>
+    <div>Gain already realized:
+        <b style="color:{% if gainAlreadyRealized > 0 %} green {% else %} red {% endif %}">
+            {{ gainAlreadyRealized|floatformat:0|intcomma }}
+        </b>
+    </div>
 </div>
 
 <hr>
@@ -15,7 +19,11 @@
         {{ transaction.transactionType }}&nbsp;&nbsp;
         {{ transaction.name }}&nbsp;&nbsp;
         {{ transaction.quantity }} x {{ transaction.price }}&nbsp;&nbsp;
-        <b style="color:green">{{ transaction.realizedGain|floatformat:0|intcomma }}</b>&nbsp;&nbsp;
+        <b style="color:{% if transaction.realizedGain > 0 %} green {% else %} red {% endif %}">
+            {{ transaction.realizedGain|floatformat:0|intcomma }}
+        </b>&nbsp;&nbsp;
+
+
     </div>
     <ul>
       {% for transactionBuy in transaction.listOfBuyTransactions %}

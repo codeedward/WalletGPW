@@ -41,7 +41,7 @@
           {% for row in listOfAllTransactionsFiltered %}
             {{ row.date }}&nbsp;&nbsp;
             {{ row.transactionType }}&nbsp;&nbsp;
-            {{ row.name }}&nbsp;&nbsp;
+            <a href="{% url 'wallet-shareDetails' row.name %}">{{ row.name }}</a>&nbsp;&nbsp;
             {{ row.quantity }}&nbsp;&nbsp;
             {{ row.accountType }}&nbsp;&nbsp;
             <br>
@@ -54,7 +54,7 @@
           {% for row in listOfAllTransactionsForSpecificAccountType %}
             {{ row.date }}&nbsp;&nbsp;
             {{ row.transactionType }}&nbsp;&nbsp;
-            {{ row.name }}&nbsp;&nbsp;
+            <a href="{% url 'wallet-shareDetails' row.name %}">{{ row.name }}</a>&nbsp;&nbsp;
             {{ row.quantity }}&nbsp;&nbsp;
             {{ row.price }}&nbsp;&nbsp;
             {{ row.transactionValue }}&nbsp;&nbsp;

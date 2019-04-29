@@ -78,7 +78,10 @@ def ShareDetails(request, shareName):
             for transaction in currentShareTransactionList:
                 transaction.listOfBuyTransactions = list(reversed(transaction.listOfBuyTransactions))
             currentShareTransactionListOnlySell = list(filter(lambda x: x.transactionType == 'S', currentShareTransactionList))
+            gainAlreadyRealized = sum(transaction.realizedGain for transaction in currentShareTransactionListOnlySell)
             return render(request, 'wallet/shareDetails.html', {
-                "shareTransactions": currentShareTransactionListOnlySell,
-                'shareName': shareName})
+                'shareTransactions': currentShareTransactionListOnlySell,
+                'shareName': shareName,
+                'gainAlreadyRealized': gainAlreadyRealized
+                })
         return redirect('wallet-dashboard')
