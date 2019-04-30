@@ -10,6 +10,7 @@ from .services.calculateService import (
     GetGroupedTransactionsByShares)
 import datetime
 from .services.rateService import getRate
+import copy
 
 initialAccountTypes = ['Normalny', 'IKE']
 initialStartDate = datetime.datetime.now().date().replace(month=1, day=1)
@@ -71,20 +72,64 @@ def Dashboard(request):
 def ShareDetails(request, shareName):
     dataFromSession = GetExcelDataFromSession(request)
     listOfAllTransactionsForSpecificAccountType = FilterTransactions(dataFromSession, initialAccountTypes)
-
+    listOfAllTransactionsForSpecificAccountTypeNormal = FilterTransactions(dataFromSession, ['Normalny'])
+    listOfAllTransactionsForSpecificAccountTypeIKE = FilterTransactions(dataFromSession, ['IKE'])
+    listOfAllTransactionsForSpecificAccountTypeWithCurrentWalletShares = copy.deepcopy(listOfAllTransactionsForSpecificAccountType)
     if "GET" == request.method:
         transactionsGoupedByShares = GetGroupedTransactionsByShares(listOfAllTransactionsForSpecificAccountType)
+        currentWallet = GetCalculatedCurrentWallet(listOfAllTransactionsForSpecificAccountType)
+        currentWalletNormal = GetCalculatedCurrentWallet(listOfAllTransactionsForSpecificAccountTypeNormal)
+        currentWalletIKE = GetCalculatedCurrentWallet(listOfAllTransactionsForSpecificAccountTypeIKE)
         if(shareName in transactionsGoupedByShares):
             currentShareTransactionList = list(reversed(transactionsGoupedByShares[shareName]))
             for transaction in currentShareTransactionList:
                 transaction.listOfBuyTransactions = list(reversed(transaction.listOfBuyTransactions))
+
+            currentRate = getRate(shareName)
             currentShareTransactionListOnlySell = list(filter(lambda x: x.transactionType == 'S', currentShareTransactionList))
             gainAlreadyRealized = sum(transaction.realizedGain for transaction in currentShareTransactionListOnlySell)
-            currentRate = getRate(shareName)
+
+            gainAlreadyRealizedWithCurrentShares = 0
+            if(shareName in currentWallet):
+
+                if(shareName in currentWalletNormal):
+                    listOfAllTransactionsForSpecificAccountTypeWithCurrentWalletShares.append(ExcelEntryRow({
+                    'date' : '2019-04-30T00:00:00',
+                    'transactionType' : 'S',
+                    'name' : shareName,
+                    'price' : str(currentRate),
+                    'quantity' : currentWalletNormal[shareName],
+                    'accountType' : 'Normalny',
+                    'transactionValue' : currentRate*currentWalletNormal[shareName],
+                    'fee': 0,
+                    'balanceChange': 0,
+                    'isRealTransaction' : 0
+                    }, False))
+                if(shareName in currentWalletIKE):
+                    listOfAllTransactionsForSpecificAccountTypeWithCurrentWalletShares.append(ExcelEntryRow({
+                    'date' : '2019-04-30T00:00:00',
+                    'transactionType' : 'S',
+                    'name' : shareName,
+                    'price' : str(currentRate),
+                    'quantity' : currentWalletIKE[shareName],
+                    'accountType' : 'IKE',
+                    'transactionValue' : currentRate*currentWalletIKE[shareName],
+                    'fee': 0,
+                    'balanceChange': 0,
+                    }, False))
+                transactionsGoupedBySharesWithCurrentWalletShares = GetGroupedTransactionsByShares(listOfAllTransactionsForSpecificAccountTypeWithCurrentWalletShares)
+                currentShareTransactionListWithCurrentWalletShares = transactionsGoupedBySharesWithCurrentWalletShares[shareName]
+                currentShareTransactionListOnlySellWithCurrentWalletShares = list(filter(lambda x: x.transactionType == 'S', currentShareTransactionListWithCurrentWalletShares))
+                #gainAlreadyRealizedWithCurrentShares += currentWallet[shareName] * currentRate
+                gainAlreadyRealizedWithCurrentShares += sum(transaction.realizedGain for transaction in currentShareTransactionListOnlySellWithCurrentWalletShares)
+                shareQuantity = currentWallet[shareName]
+
             return render(request, 'wallet/shareDetails.html', {
                 'shareTransactions': currentShareTransactionListOnlySell,
                 'shareName': shareName,
+                'shareQuantity': shareQuantity,
                 'gainAlreadyRealized': gainAlreadyRealized,
-                'currentRate': currentRate
+                'currentRate': currentRate,
+                'gainAlreadyRealizedWithCurrentShares': gainAlreadyRealizedWithCurrentShares
                 })
         return redirect('wallet-dashboard')

@@ -40,7 +40,10 @@ def GetGroupedTransactionsByShares(listOfAllTransactionsForSpecificAccountType):
                     #print(f"-----For {shareName} - sell:{transactionSell.date} amount:{transactionSell.quantity}")
                 temporarySumForBatchOfBuyTransactions = 0
                 for transactionBuy in currentList:
-                    if(transactionBuy.transactionType == 'K' and transactionBuy.quantityForCalculation > 0):
+                    if(transactionBuy.transactionType == 'K' and
+                        transactionBuy.quantityForCalculation > 0 and
+                        transactionBuy.accountType == transactionSell.accountType):
+
                         amountToMultiply = 0
 
                         if(transactionSell.quantityForCalculation > transactionBuy.quantityForCalculation):

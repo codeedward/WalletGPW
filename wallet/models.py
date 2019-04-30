@@ -16,8 +16,9 @@ class ExcelEntryRow():
     realizedGain = 0
     quantityForCalculation = 0
     listOfBuyTransactions = []
+    isRealTransaction = True
 
-    def __init__(self, row = None):
+    def __init__(self, row = None, isRealTransaction = True):
         if type(row) is tuple:
             self.date = row[0].value
             self.transactionType = row[1].value
@@ -41,6 +42,7 @@ class ExcelEntryRow():
             self.accountType = row['accountType']
 
         self.quantityForCalculation = self.quantity
+        self.isRealTransaction = isRealTransaction
 
 class TransactionBuyTakenToRealizeSell():
     date = ''

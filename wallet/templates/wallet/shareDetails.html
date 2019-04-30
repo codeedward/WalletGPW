@@ -3,14 +3,15 @@
 
 <div>
   <h2>Statistics</h2>
+    <div>Quantity in wallet: {{shareQuantity}}</div>
     <div>Gain already realized:
         <b style="color:{% if gainAlreadyRealized > 0 %} green {% else %} red {% endif %}">
             {{ gainAlreadyRealized|floatformat:0|intcomma }}
         </b>
     </div>
-    <div>Gain if all sold on current price:
-        <b style="color:{% if gainAlreadyRealized > 0 %} green {% else %} red {% endif %}">
-            0
+    <div>Gain if all sell on current price:
+        <b style="color:{% if gainAlreadyRealizedWithCurrentShares > 0 %} green {% else %} red {% endif %}">
+            {{ gainAlreadyRealizedWithCurrentShares|floatformat:0|intcomma }}
         </b>
     </div>
 </div>
@@ -19,7 +20,7 @@
 <div>
   <h2>List of all transactions:</h2>
   {% for transaction in shareTransactions %}
-    <div style="background-color: lightgray">
+    <div style="background-color: {% if transaction.isRealTransaction %} lightgray {% else %} red {% endif %}">
         {{ transaction.date}}&nbsp;&nbsp;
         {{ transaction.transactionType }}&nbsp;&nbsp;
         {{ transaction.name }}&nbsp;&nbsp;
@@ -27,8 +28,6 @@
         <b style="color:{% if transaction.realizedGain > 0 %} green {% else %} red {% endif %}">
             {{ transaction.realizedGain|floatformat:0|intcomma }}
         </b>&nbsp;&nbsp;
-
-
     </div>
     <ul>
       {% for transactionBuy in transaction.listOfBuyTransactions %}

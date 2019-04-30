@@ -15,8 +15,8 @@
     + modify GetRealizedGain to return list of transactions with calculated Sell transactions + sublist of buy transactions related to them
     + for each Sell type display also list of buy transactions collapsed underneath
     + for each Sell display also gain/lose realized with this transaction
-    - overal statistic for the share gain/lose on this share already realized
+    + overal statistic for the share gain/lose on this share already realized
     - overal statistic for the share gain/lose on this share (require to have current rates integration)
-    - add link to this page from wallet for all transactions
+    + add link to this page from wallet for all transactions
     - display dates correctly
 
