@@ -1,7 +1,9 @@
-from .transactionFilterService import GetTransactionsSplitByShares
+from .transactionFilterService import GetTransactionsSplitByShares,FilterTransactions
 import copy
 from dateutil import parser
-from ..models import TransactionBuyTakenToRealizeSell
+from ..models import TransactionBuyTakenToRealizeSell, ExcelEntryRow
+from ..utils.excel_utils import GetExcelDataFromSession
+import datetime
 
 def GetCalculatedCurrentWallet(listOfTransactions):
     walletShares = {}
@@ -81,3 +83,44 @@ def GetRealizedGain(listOfAllTransactionsForSpecificAccountType, startDate, endD
                 sum += transactionSell.realizedGain
     return sum
 
+
+def GetGainAlreadyRealizedWithCurrentShares(dataFromSession, listOfAllTransactionsForSpecificAccountType, shareName, currentRate):
+    listOfAllTransactionsForSpecificAccountTypeNormal = FilterTransactions(dataFromSession, ['Normalny'])
+    listOfAllTransactionsForSpecificAccountTypeIKE = FilterTransactions(dataFromSession, ['IKE'])
+    listOfAllTransactionsForSpecificAccountTypeWithCurrentWalletShares = copy.deepcopy(listOfAllTransactionsForSpecificAccountType)
+
+    currentWalletNormal = GetCalculatedCurrentWallet(listOfAllTransactionsForSpecificAccountTypeNormal)
+    currentWalletIKE = GetCalculatedCurrentWallet(listOfAllTransactionsForSpecificAccountTypeIKE)
+
+    if(shareName in currentWalletNormal):
+        listOfAllTransactionsForSpecificAccountTypeWithCurrentWalletShares.append(ExcelEntryRow({
+        'date' : datetime.date.today(),
+        'transactionType' : 'S',
+        'name' : shareName,
+        'price' : str(currentRate),
+        'quantity' : currentWalletNormal[shareName],
+        'accountType' : 'Normalny',
+        'transactionValue' : currentRate*currentWalletNormal[shareName],
+        'fee': 0,
+        'balanceChange': 0,
+        'isRealTransaction' : 0
+        }, False))
+
+    if(shareName in currentWalletIKE):
+        listOfAllTransactionsForSpecificAccountTypeWithCurrentWalletShares.append(ExcelEntryRow({
+        'date' : datetime.date.today(),
+        'transactionType' : 'S',
+        'name' : shareName,
+        'price' : str(currentRate),
+        'quantity' : currentWalletIKE[shareName],
+        'accountType' : 'IKE',
+        'transactionValue' : currentRate*currentWalletIKE[shareName],
+        'fee': 0,
+        'balanceChange': 0,
+        }, False))
+
+        transactionsGoupedBySharesWithCurrentWalletShares = GetGroupedTransactionsByShares(listOfAllTransactionsForSpecificAccountTypeWithCurrentWalletShares)
+        currentShareTransactionListWithCurrentWalletShares = transactionsGoupedBySharesWithCurrentWalletShares[shareName]
+        currentShareTransactionListOnlySellWithCurrentWalletShares = list(filter(lambda x: x.transactionType == 'S', currentShareTransactionListWithCurrentWalletShares))
+        realizedGainWithCurrentWalletShares = sum(transaction.realizedGain for transaction in currentShareTransactionListOnlySellWithCurrentWalletShares)
+        return realizedGainWithCurrentWalletShares
