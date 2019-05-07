@@ -1,14 +1,17 @@
 from django.shortcuts import render
-from .models import ExcelEntryRow
+from .models import ExcelEntryRow, ExcelEntryIkeRow
 from .forms import CommonFilterForm
 from .utils.excel_utils import ReadExcel, GetExcelDataFromSession, SaveExcelDataToSession
+from .utils.excel_utilsForIke import ReadExcelIke, GetExcelDataIkeFromSession, SaveExcelDataIkeToSession
 from .services.transactionFilterService import FilterTransactions
 from .services.calculateService import (
     GetCalculatedCurrentWallet,
     GetAmountPutInSoFar,
     GetRealizedGain,
     GetGroupedTransactionsByShares,
-    GetGainAlreadyRealizedWithCurrentShares)
+    GetGainAlreadyRealizedWithCurrentShares,
+    GetIkeIncomeBalance,
+    GetCashBalanceForTheAccount)
 import datetime
 from .services.rateService import getRate
 import copy
@@ -25,6 +28,8 @@ def LoadData(request):
     else:
         excelData = ReadExcel(request.FILES["excel_file"])
         SaveExcelDataToSession(request, excelData)
+        excelDataIke = ReadExcelIke(request.FILES["excel_file"])
+        SaveExcelDataIkeToSession(request, excelDataIke)
         modelData = FilterTransactions(excelData, initialAccountTypes)
         return render(request, 'wallet/loadData.html', {"excel_data": modelData})
 
@@ -33,6 +38,7 @@ def Dashboard(request):
     form = CommonFilterForm()
     listOfAllTransactionsForSpecificAccountType = []
     dataFromSession = GetExcelDataFromSession(request)
+    dataFromSessionIke = GetExcelDataIkeFromSession(request)
 
     accountTypes = initialAccountTypes
     startDate = initialStartDate
@@ -52,8 +58,11 @@ def Dashboard(request):
 
     listOfAllTransactionsForSpecificAccountType = FilterTransactions(dataFromSession, accountTypes)
     listOfAllTransactionsFiltered = FilterTransactions(dataFromSession, accountTypes, startDate, endDate)
+    ikePutInValue = GetIkeIncomeBalance(dataFromSessionIke)
     walletShares = GetCalculatedCurrentWallet(listOfAllTransactionsForSpecificAccountType)
     amountPutInSoFar = GetAmountPutInSoFar(listOfAllTransactionsForSpecificAccountType)
+    cashBalanceForTheAccount = GetCashBalanceForTheAccount(listOfAllTransactionsForSpecificAccountType, amountPutInSoFar, ikePutInValue, accountTypes)
+    print(f"Cash balance aprox:{cashBalanceForTheAccount}")
     realizedGain = GetRealizedGain(listOfAllTransactionsForSpecificAccountType, startDate, endDate)
     stats = {
         'putInSoFar' : "{0:.0f}".format(amountPutInSoFar),

@@ -124,3 +124,25 @@ def GetGainAlreadyRealizedWithCurrentShares(dataFromSession, listOfAllTransactio
         currentShareTransactionListOnlySellWithCurrentWalletShares = list(filter(lambda x: x.transactionType == 'S', currentShareTransactionListWithCurrentWalletShares))
         realizedGainWithCurrentWalletShares = sum(transaction.realizedGain for transaction in currentShareTransactionListOnlySellWithCurrentWalletShares)
         return realizedGainWithCurrentWalletShares
+
+
+def GetIkeIncomeBalance(listOfTransactionsForIke):
+    sum = 0
+    for entry in listOfTransactionsForIke:
+        sum += entry.quantity;
+    return sum
+
+def GetCashBalanceForTheAccount(listOfTransactions, amountPutInSoFar, ikePutInValue, accountTypes):
+    sum = 0
+    for transaction in listOfTransactions:
+        if(transaction.transactionType != 'Wplata' and transaction.accountType in accountTypes):
+            sum += float(transaction.balanceChange.replace(",", "."));
+
+    if(all(accountType == 'Normalny' for accountType in accountTypes)):
+        sum += (amountPutInSoFar - ikePutInValue)
+    elif(all(accountType == 'IKE' for accountType in accountTypes)):
+        sum += ikePutInValue
+    else:
+        sum += amountPutInSoFar
+
+    return sum

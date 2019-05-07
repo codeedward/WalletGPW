@@ -11,12 +11,14 @@
     + fee from realized gain (selected term)
     + check if calculations are fine (do it manually)
     / percentage of gain/loss (whole term, consider this as require more development)
-- details of share (when you click on it redirect you to the page with all transactions history)
++ details of share (when you click on it redirect you to the page with all transactions history)
     + modify GetRealizedGain to return list of transactions with calculated Sell transactions + sublist of buy transactions related to them
     + for each Sell type display also list of buy transactions collapsed underneath
     + for each Sell display also gain/lose realized with this transaction
     + overal statistic for the share gain/lose on this share already realized
-    - overal statistic for the share gain/lose on this share (require to have current rates integration)
+    + overal statistic for the share gain/lose on this share (require to have current rates integration)
     + add link to this page from wallet for all transactions
-    - display dates correctly
-
+- display dates correctly
+- display chart with percentages according to current wallet
+- add theoritical transaction option
++ load ike sheet to the session memory

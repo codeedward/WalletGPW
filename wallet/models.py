@@ -59,3 +59,17 @@ class TransactionBuyTakenToRealizeSell():
         self.quantity = transactionBuy.quantity
         self.quantityRealized = quantityRealized
         self.price = transactionBuy.price
+
+
+class ExcelEntryIkeRow():
+    date = datetime.datetime.now()
+    quantity = ''
+
+    def __init__(self, row = None):
+        if type(row) is tuple:
+            self.date = row[0].value
+            self.quantity = row[2].value
+
+        elif type(row) is dict:
+            self.date = row['date']
+            self.quantity = row['quantity']
