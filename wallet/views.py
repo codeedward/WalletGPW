@@ -11,7 +11,8 @@ from .services.calculateService import (
     GetGroupedTransactionsByShares,
     GetGainAlreadyRealizedWithCurrentShares,
     GetIkeIncomeBalance,
-    GetCashBalanceForTheAccount)
+    GetCashBalanceForTheAccount,
+    GetDataForWalletChart)
 import datetime
 from .services.rateService import getRate
 import copy
@@ -69,12 +70,14 @@ def Dashboard(request):
         'realizedGain': "{0:.0f}".format(realizedGain),
         'feeFromRealizedGain': "{0:.0f}".format(realizedGain * 0.19)
     }
+    chartInJsonFormat = GetDataForWalletChart(walletShares)
     viewModel = {
         'form': form,
         'listOfAllTransactionsForSpecificAccountType': listOfAllTransactionsForSpecificAccountType,
         'walletShares': walletShares,
         'listOfAllTransactionsFiltered': listOfAllTransactionsFiltered,
-        'stats': stats
+        'stats': stats,
+        'chartData': chartInJsonFormat
         }
     return render(request, 'wallet/dashboard.html', viewModel)
 

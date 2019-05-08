@@ -26,7 +26,7 @@
         </div>
 
         <hr>
-        <div>
+        <div style="float:left">
           <h2>Wallet</h2>
           {% for rowName, quantity in walletShares.items %}
             <a href="{% url 'wallet-shareDetails' rowName %}">{{ rowName }}</a>&nbsp;&nbsp;
@@ -34,7 +34,13 @@
             <br>
           {% endfor %}
         </div>
-
+        <div>
+          <div id="walletChart"></div>
+          <script src="https://code.highcharts.com/highcharts.src.js"></script>
+          <script>
+            Highcharts.chart('walletChart', {{ chartData|safe }});
+          </script>
+        </div>
         <hr>
         <div>
           <h2>Filtered transactions</h2>

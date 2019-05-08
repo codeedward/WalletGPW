@@ -4,6 +4,8 @@ from dateutil import parser
 from ..models import TransactionBuyTakenToRealizeSell, ExcelEntryRow
 from ..utils.excel_utils import GetExcelDataFromSession
 import datetime
+from .rateService import getRate
+import json
 
 def GetCalculatedCurrentWallet(listOfTransactions):
     walletShares = {}
@@ -146,3 +148,25 @@ def GetCashBalanceForTheAccount(listOfTransactions, amountPutInSoFar, ikePutInVa
         sum += amountPutInSoFar
 
     return sum
+
+
+def GetDataForWalletChart(walletShares):
+    walletChartData = []
+    for index, (rowName, quantity) in enumerate(walletShares.items()):
+        walletChartData.append({
+                'name' : rowName,
+                'y' : int(quantity * getRate(rowName))
+            })
+    walletChartObj = {
+        'chart': {'type': 'pie'},
+        'title': {'text': 'Wallet engagement'},
+        'tooltip': {
+            'pointFormat': '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        'series': [{
+            'name': 'Engagement',
+            'data': walletChartData
+        }]
+    }
+    chartInJsonFormat = json.dumps(walletChartObj)
+    return chartInJsonFormat
