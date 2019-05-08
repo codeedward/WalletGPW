@@ -6,7 +6,7 @@ def FilterTransactions(listOfExcelRows, accountTypes, startDate = None, endDate 
 def filterTransactions(excelEntryRow, accountTypes, startDate, endDate):
     if(excelEntryRow.accountType in accountTypes and
         ((startDate is None and endDate is None) or
-            (startDate is not None and endDate is not None and startDate <= parser.parse(excelEntryRow.date).date() <= endDate))
+            (startDate is not None and endDate is not None and startDate <= excelEntryRow.date <= endDate))
         ):
         return True
     return False

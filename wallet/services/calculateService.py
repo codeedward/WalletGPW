@@ -81,7 +81,7 @@ def GetRealizedGain(listOfAllTransactionsForSpecificAccountType, startDate, endD
     for shareName, transactionList in transactionsGoupedByShares.items():
         currentList = transactionsGoupedByShares[shareName]
         for transactionSell in currentList:
-            if(transactionSell.transactionType == 'S' and startDate <= parser.parse(transactionSell.date).date() <= endDate):
+            if(transactionSell.transactionType == 'S' and startDate <= transactionSell.date <= endDate):
                 sum += transactionSell.realizedGain
     return sum
 

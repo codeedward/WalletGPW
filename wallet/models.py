@@ -1,6 +1,7 @@
 from django.db import models
 import json
 import datetime
+from dateutil import parser
 
 class ExcelEntryRow():
     date = datetime.datetime.now()
@@ -20,7 +21,7 @@ class ExcelEntryRow():
 
     def __init__(self, row = None, isRealTransaction = True):
         if type(row) is tuple:
-            self.date = row[0].value
+            self.date = TryParseDate(row[0].value)
             self.transactionType = row[1].value
             self.name = row[2].value
             self.quantity = row[3].value
@@ -31,7 +32,7 @@ class ExcelEntryRow():
             self.accountType = row[10].value
 
         elif type(row) is dict:
-            self.date = row['date']
+            self.date = TryParseDate(row['date'])
             self.transactionType = row['transactionType']
             self.name = row['name']
             self.quantity = row['quantity']
@@ -73,3 +74,10 @@ class ExcelEntryIkeRow():
         elif type(row) is dict:
             self.date = row['date']
             self.quantity = row['quantity']
+
+
+def TryParseDate(value):
+    try:
+        return parser.parse(value).date()
+    except:
+        return value
