@@ -12,7 +12,8 @@ from .services.calculateService import (
     GetGainAlreadyRealizedWithCurrentShares,
     GetIkeIncomeBalance,
     GetCashBalanceForTheAccount,
-    GetDataForWalletChart)
+    GetDataForWalletChart,
+    AddTheoreticalTransaction)
 import datetime
 from .services.rateService import getRate
 import copy
@@ -85,34 +86,45 @@ def Dashboard(request):
 def ShareDetails(request, shareName):
     dataFromSession = GetExcelDataFromSession(request)
     listOfAllTransactionsForSpecificAccountType = FilterTransactions(dataFromSession, initialAccountTypes)
+    currentRate = getRate(shareName)
 
-    if "GET" == request.method:
-        transactionsGoupedByShares = GetGroupedTransactionsByShares(listOfAllTransactionsForSpecificAccountType)
-        currentWallet = GetCalculatedCurrentWallet(listOfAllTransactionsForSpecificAccountType)
+    if "POST" == request.method:
+        accountTypeForTheoreticalTransaction = ''
+        newTransactionQuantity = int(request.POST.get("newTransactionQuantity", 0))
+        isTheoreticalIkeType = bool(request.POST.get("isTheoreticalIkeType", False))
+        if(isTheoreticalIkeType):
+            accountTypeForTheoreticalTransaction = 'IKE'
+        else:
+            accountTypeForTheoreticalTransaction = 'Normalny'
+        listOfAllTransactionsForSpecificAccountType = AddTheoreticalTransaction(listOfAllTransactionsForSpecificAccountType, shareName, newTransactionQuantity, currentRate, accountTypeForTheoreticalTransaction)
 
-        if(shareName in transactionsGoupedByShares):
-            currentShareTransactionList = list(reversed(transactionsGoupedByShares[shareName]))
-            for transaction in currentShareTransactionList:
-                transaction.listOfBuyTransactions = list(reversed(transaction.listOfBuyTransactions))
+    transactionsGoupedByShares = GetGroupedTransactionsByShares(listOfAllTransactionsForSpecificAccountType)
+    currentWallet = GetCalculatedCurrentWallet(listOfAllTransactionsForSpecificAccountType)
 
-            currentRate = getRate(shareName)
-            currentShareTransactionListOnlySell = list(filter(lambda x: x.transactionType == 'S', currentShareTransactionList))
-            gainAlreadyRealized = sum(transaction.realizedGain for transaction in currentShareTransactionListOnlySell)
+    if(shareName in transactionsGoupedByShares):
+        currentShareTransactionList = list(reversed(transactionsGoupedByShares[shareName]))
+        for transaction in currentShareTransactionList:
+            transaction.listOfBuyTransactions = list(reversed(transaction.listOfBuyTransactions))
 
-            if(shareName in currentWallet):
-                gainAlreadyRealizedWithCurrentShares = GetGainAlreadyRealizedWithCurrentShares(dataFromSession,
-                    listOfAllTransactionsForSpecificAccountType, shareName, currentRate)
-                shareQuantity = currentWallet[shareName]
-            else:
-                gainAlreadyRealizedWithCurrentShares = 0
-                shareQuantity = 0
+        currentShareTransactionListOnlySell = list(filter(lambda x: x.transactionType == 'S', currentShareTransactionList))
+        gainAlreadyRealized = sum(transaction.realizedGain for transaction in currentShareTransactionListOnlySell)
 
-            return render(request, 'wallet/shareDetails.html', {
-                'shareTransactions': currentShareTransactionListOnlySell,
-                'shareName': shareName,
-                'shareQuantity': shareQuantity,
-                'gainAlreadyRealized': gainAlreadyRealized,
-                'currentRate': currentRate,
-                'gainAlreadyRealizedWithCurrentShares': gainAlreadyRealizedWithCurrentShares
-                })
-        return redirect('wallet-dashboard')
+        if(shareName in currentWallet):
+            gainAlreadyRealizedWithCurrentShares = GetGainAlreadyRealizedWithCurrentShares(dataFromSession,
+                listOfAllTransactionsForSpecificAccountType, shareName, currentRate)
+            shareQuantity = currentWallet[shareName]
+        else:
+            gainAlreadyRealizedWithCurrentShares = 0
+            shareQuantity = 0
+
+        return render(request, 'wallet/shareDetails.html', {
+            'shareTransactions': currentShareTransactionListOnlySell,
+            'shareName': shareName,
+            'shareQuantity': shareQuantity,
+            'gainAlreadyRealized': gainAlreadyRealized,
+            'currentRate': currentRate,
+            'gainAlreadyRealizedWithCurrentShares': gainAlreadyRealizedWithCurrentShares
+            })
+    return redirect('wallet-dashboard')
+
+

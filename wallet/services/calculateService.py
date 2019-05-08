@@ -170,3 +170,21 @@ def GetDataForWalletChart(walletShares):
     }
     chartInJsonFormat = json.dumps(walletChartObj)
     return chartInJsonFormat
+
+
+def AddTheoreticalTransaction(listOfTransactions, shareName, quantity, currentRate, accountType = 'Normalny'):
+
+    listOfTransactions.append(ExcelEntryRow({
+    'date' : datetime.date.today(),
+    'transactionType' : 'S',
+    'name' : shareName,
+    'price' : str(currentRate),
+    'quantity' : quantity,
+    'accountType' : accountType,
+    'transactionValue' : currentRate*quantity,
+    'fee': 0,
+    'balanceChange': 0,
+    'isRealTransaction' : 0
+    }, False))
+
+    return listOfTransactions

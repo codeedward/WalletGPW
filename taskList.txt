@@ -20,5 +20,5 @@
     + add link to this page from wallet for all transactions
 + display dates correctly
 + display chart with percentages according to current wallet
-- add theoritical transaction option
++ add theoritical transaction option
 + load ike sheet to the session memory
